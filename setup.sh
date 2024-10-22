@@ -22,26 +22,43 @@ sudo apt install -y unclutter
 
 # Modify /etc/rc.local
 echo -e "\e[32mDisabling ETH port.\e[0m"
-sudo bash -c 'cat <<EOL > /etc/rc.local
-#!/bin/sh -e
-echo "1-1" | sudo tee /sys/bus/usb/drivers/usb/unbind
+rc_local_content="echo \"1-1\" | sudo tee /sys/bus/usb/drivers/usb/unbind
 sudo ifconfig eth0 down
-exit 0
-EOL'
+exit 0"
+rc_local_file="/etc/rc.local"
+
+if ! grep -Fxq "echo \"1-1\" | sudo tee /sys/bus/usb/drivers/usb/unbind" "$rc_local_file"; then
+    sudo bash -c "cat <<EOL > $rc_local_file
+#!/bin/sh -e
+$rc_local_content
+EOL"
+fi
 
 # Ensure /etc/rc.local is executable
-#sudo chmod +x /etc/rc.local
+sudo chmod +x /etc/rc.local
 
 # Append dtoverlay=disable-bt to /boot/firmware/config.txt
 echo -e "\e[32mDisabling Bluetooth.\e[0m"
-sudo bash -c 'echo "dtoverlay=disable-bt" >> /boot/firmware/config.txt'
+config_txt_file="/boot/firmware/config.txt"
+dtoverlay_content="dtoverlay=disable-bt"
+
+if ! grep -Fxq "$dtoverlay_content" "$config_txt_file"; then
+    echo "$dtoverlay_content" | sudo tee -a "$config_txt_file"
+fi
 
 # Append Chromium kiosk mode with the provided URL and unclutter to autostart
 echo -e "\e[32mAutostart Chromium.\e[0m"
-sudo bash -c "cat <<EOL >> /etc/xdg/lxsession/LXDE-pi/autostart
-@chromium-browser --kiosk $kiosk_url
-@unclutter -idle 0.1 -root
-EOL"
+autostart_file="/etc/xdg/lxsession/LXDE-pi/autostart"
+chromium_command="@chromium-browser --kiosk $kiosk_url"
+unclutter_command="@unclutter -idle 0.1 -root"
+
+if ! grep -Fxq "$chromium_command" "$autostart_file"; then
+    echo "$chromium_command" | sudo tee -a "$autostart_file"
+fi
+
+if ! grep -Fxq "$unclutter_command" "$autostart_file"; then
+    echo "$unclutter_command" | sudo tee -a "$autostart_file"
+fi
 
 # Change Wayland to X11 in raspi-config
 echo -e "\e[32mChange to X11.\e[0m"
@@ -51,5 +68,5 @@ sudo raspi-config nonint do_wayland W1
 #echo -e "\e[32mWrite protect system.\e[0m"
 #sudo raspi-config nonint enable_overlayfs 0
 
-echo -e "\e[32mScript completed, rebooting in 30 seconds.\e[0m"
+echo -e "\e[32mScript completed, rebooting in 30 seconds. Remember to run sudo raspi-config nonint enable_overlayfs 0 after reboot.\e[0m"
 sleep 30 && sudo reboot
