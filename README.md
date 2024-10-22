@@ -7,4 +7,4 @@ This repository contains a script to set up a Raspberry Pi in kiosk mode using C
 To run the setup script directly from this repository, use the following one-line command:
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/bernhardmostrey/rpi-kiosk/refs/heads/main/setup.sh | bash
+curl -sSL https://raw.githubusercontent.com/bernhardmostrey/rpi-kiosk/refs/heads/main/setup.sh | bash -s -- http://example.com
