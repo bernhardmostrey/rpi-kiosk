@@ -13,6 +13,10 @@ sudo apt update -y
 sudo apt upgrade -y
 sudo apt dist-upgrade -y
 
+# Install software
+sudo apt install -y chromium-browser
+sudo apt install -y unclutter
+
 # Modify /etc/rc.local
 sudo bash -c 'cat <<EOL > /etc/rc.local
 #!/bin/sh -e
