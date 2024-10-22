@@ -34,7 +34,7 @@ sudo bash -c "cat <<EOL >> /etc/xdg/lxsession/LXDE-pi/autostart
 EOL"
 
 # Change Wayland to X11 in raspi-config
-sudo raspi-config nonint do_x11
+sudo raspi-config nonint do_wayland W1
 
 # Enable Overlay File System and write-protect boot partition
 sudo raspi-config nonint enable_overlayfs
