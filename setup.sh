@@ -37,6 +37,6 @@ EOL"
 sudo raspi-config nonint do_wayland W1
 
 # Enable Overlay File System and write-protect boot partition
-sudo raspi-config nonint enable_overlayfs
+sudo raspi-config nonint enable_overlayfs 0
 
 echo "Script execution completed."
